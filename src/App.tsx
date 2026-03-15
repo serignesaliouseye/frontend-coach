@@ -4,6 +4,9 @@ import LoginPage from './pages/LoginPages';
 import DashboardPage from './pages/DashboardPages';
 import Navbar from './components/layout/Navbar';
 import Sidebar from './components/layout/Sidebar';
+import PointagesPage from './pages/PointagesPage';
+import SanctionsPage from './pages/SanctionsPage';
+import StagiairesPage from './pages/StagiairesPage';
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -40,6 +43,30 @@ function App() {
           element={
             <PrivateRoute>
               <DashboardPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/pointages"
+          element={
+            <PrivateRoute>
+              <PointagesPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/sanctions"
+          element={
+            <PrivateRoute>
+              <SanctionsPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/stagiaires"
+          element={
+            <PrivateRoute>
+              <StagiairesPage />
             </PrivateRoute>
           }
         />
