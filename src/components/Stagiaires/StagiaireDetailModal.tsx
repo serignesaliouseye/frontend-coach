@@ -1,3 +1,4 @@
+// src/components/Stagiaires/StagiaireDetailModal.tsx
 import React, { useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
@@ -56,9 +57,9 @@ const StagiaireDetailModal: React.FC<Props> = ({ isOpen, onClose, stagiaire }) =
         date_fin: new Date().toISOString().split('T')[0],
       });
 
+      console.log('Pointages chargés:', data); // DEBUG
       setPointages(data);
 
-      // Calculer les stats
       const newStats = {
         presents: data.filter((p: Pointage) => p.statut === 'present').length,
         retards: data.filter((p: Pointage) => p.statut === 'retard').length,
@@ -86,6 +87,12 @@ const StagiaireDetailModal: React.FC<Props> = ({ isOpen, onClose, stagiaire }) =
         {statut}
       </span>
     );
+  };
+
+  const getPhotoUrl = (photo?: string) => {
+    if (!photo) return null;
+    if (photo.startsWith('http')) return photo;
+    return `http://127.0.0.1:8000/storage/${photo}`;
   };
 
   if (!stagiaire) return null;
@@ -131,9 +138,13 @@ const StagiaireDetailModal: React.FC<Props> = ({ isOpen, onClose, stagiaire }) =
                   <div className="flex-shrink-0">
                     {stagiaire.photo ? (
                       <img
-                        className="h-24 w-24 rounded-full object-cover"
-                        src={`http://127.0.0.1:8000/storage/${stagiaire.photo}`}
+                        className="h-24 w-24 rounded-full object-cover border-2 border-gray-200"
+                        src={getPhotoUrl(stagiaire.photo) || ''}
                         alt=""
+                        onError={(e) => {
+                          console.error('Erreur chargement photo');
+                          e.currentTarget.style.display = 'none';
+                        }}
                       />
                     ) : (
                       <div className="h-24 w-24 rounded-full bg-indigo-100 flex items-center justify-center">
@@ -215,7 +226,7 @@ const StagiaireDetailModal: React.FC<Props> = ({ isOpen, onClose, stagiaire }) =
                               {new Date(pointage.date).toLocaleDateString('fr-FR')}
                             </span>
                             <span className="text-sm text-gray-600">
-                              {pointage.heure_arrivee || '--:--'} - {pointage.heure_sortie || '--:--'}
+                              {pointage.heure_arrivee?.substring(0,5) || '--:--'} - {pointage.heure_sortie?.substring(0,5) || '--:--'}
                             </span>
                           </div>
                           {getStatusBadge(pointage.statut)}

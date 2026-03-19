@@ -106,14 +106,22 @@ const DashboardPage: React.FC = () => {
               <div className="flex items-center space-x-4">
                 <div className="flex-shrink-0">
                   {stagiaire.photo ? (
-                    <img className="h-10 w-10 rounded-full" src={stagiaire.photo} alt="" />
-                  ) : (
+                    <img
+                        className="h-10 w-10 rounded-full object-cover"
+                        // ✅ Corrigé : ajout de l'URL du backend
+                        src={`http://127.0.0.1:8000/storage/${stagiaire.photo}`}
+                        alt=""
+                        onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                        }}
+                    />
+                ) : (
                     <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                      <span className="text-indigo-600 font-medium">
-                        {stagiaire.prenom[0]}{stagiaire.nom[0]}
-                      </span>
+                        <span className="text-indigo-600 font-medium">
+                            {stagiaire.prenom[0]}{stagiaire.nom[0]}
+                        </span>
                     </div>
-                  )}
+                )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900">
