@@ -1,5 +1,4 @@
-// App.tsx - Version corrigée
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPages';
 import DashboardPage from './pages/DashboardPages';
@@ -8,43 +7,6 @@ import Sidebar from './components/layout/Sidebar';
 import PointagesPage from './pages/PointagesPage';
 import SanctionsPage from './pages/SanctionsPage';
 import StagiairesPage from './pages/StagiairesPage';
-
-// Layout component qui contient la structure commune
-const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-  const closeSidebar = () => setSidebarOpen(false);
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar onMenuClick={toggleSidebar} />
-      <div className="flex">
-        {/* Sidebar desktop - toujours visible sur grands écrans */}
-        <div className="hidden lg:block">
-          <Sidebar />
-        </div>
-
-        {/* Sidebar mobile - overlay qui apparaît quand sidebarOpen est true */}
-        {sidebarOpen && (
-          <>
-            <div
-              className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
-              onClick={closeSidebar}
-            />
-            <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl lg:hidden">
-              <Sidebar onClose={closeSidebar} />
-            </div>
-          </>
-        )}
-
-        <main className="flex-1 p-6">
-          {children}
-        </main>
-      </div>
-    </div>
-  );
-};
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -58,7 +20,17 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     return <Navigate to="/login" />;
   }
 
-  return <DashboardLayout>{children}</DashboardLayout>;
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <div className="flex">
+        <Sidebar />
+        <main className="flex-1 p-6">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
 };
 
 function App() {
