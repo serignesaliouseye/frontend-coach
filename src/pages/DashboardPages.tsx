@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { Bars3Icon } from '@heroicons/react/24/outline';
 import api from '../services/api';
 import type { Stagiaire } from '../types';
 
-const DashboardPage: React.FC = () => {
+interface DashboardPageProps {
+  onMenuClick?: () => void;
+}
+
+const DashboardPage: React.FC<DashboardPageProps> = ({ onMenuClick }) => {
   const [stagiaires, setStagiaires] = useState<Stagiaire[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -49,6 +54,12 @@ const DashboardPage: React.FC = () => {
     }
   };
 
+  const getPhotoUrl = (photo: string | undefined): string | undefined => {
+    if (!photo) return undefined;
+    if (photo.startsWith('http')) return photo;
+    return `https://backend-pointage-cwb8.onrender.com/storage/${photo}`;
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -59,6 +70,16 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Bouton menu mobile */}
+      <div className="lg:hidden">
+        <button
+          onClick={onMenuClick}
+          className="p-2 text-gray-400 hover:text-gray-500 rounded-lg hover:bg-gray-100 transition-colors"
+        >
+          <Bars3Icon className="h-6 w-6" />
+        </button>
+      </div>
+
       {/* Statistiques */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-4">
         <div className="bg-white overflow-hidden shadow rounded-lg">
@@ -107,21 +128,20 @@ const DashboardPage: React.FC = () => {
                 <div className="flex-shrink-0">
                   {stagiaire.photo ? (
                     <img
-                        className="h-10 w-10 rounded-full object-cover"
-                        // ✅ Corrigé : ajout de l'URL du backend
-                        src={`http://127.0.0.1:8000/storage/${stagiaire.photo}`}
-                        alt=""
-                        onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                        }}
+                      className="h-10 w-10 rounded-full object-cover"
+                      src={getPhotoUrl(stagiaire.photo)}
+                      alt=""
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
                     />
-                ) : (
+                  ) : (
                     <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                        <span className="text-indigo-600 font-medium">
-                            {stagiaire.prenom[0]}{stagiaire.nom[0]}
-                        </span>
+                      <span className="text-indigo-600 font-medium">
+                        {stagiaire.prenom[0]}{stagiaire.nom[0]}
+                      </span>
                     </div>
-                )}
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900">
