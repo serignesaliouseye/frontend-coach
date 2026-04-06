@@ -1,3 +1,4 @@
+// App.tsx - Version avec bouton hamburger pour mobile
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPages';
@@ -11,6 +12,7 @@ import StagiairesPage from './pages/StagiairesPage';
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (!token) {
     return <Navigate to="/login" />;
@@ -20,16 +22,43 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     return <Navigate to="/login" />;
   }
 
-  return <>{children}</>;
-};
-
-function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar onMenuClick={toggleSidebar} />
+      <div className="flex">
+        {/* Sidebar desktop - toujours visible */}
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
+
+        {/* Sidebar mobile - overlay */}
+        <div
+          className={`fixed inset-0 z-40 lg:hidden transition-transform duration-300 ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <div
+            className="absolute inset-0 bg-gray-600 bg-opacity-75"
+            onClick={toggleSidebar}
+          />
+          <div className="relative w-64 h-full bg-white shadow-xl">
+            <Sidebar onClose={toggleSidebar} />
+          </div>
+        </div>
+
+        <main className="flex-1 p-6">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+};
+
+function App() {
   return (
     <BrowserRouter>
       <Routes>
@@ -38,30 +67,7 @@ function App() {
           path="/dashboard"
           element={
             <PrivateRoute>
-              <div className="min-h-screen bg-gray-50">
-                <Navbar onMenuClick={toggleSidebar} />
-                <div className="flex">
-                  {/* Sidebar - desktop toujours visible, mobile conditionnel */}
-                  <div className={`
-                    fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
-                    ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-                  `}>
-                    <Sidebar onClose={() => setSidebarOpen(false)} />
-                  </div>
-                  
-                  {/* Overlay pour fermer le sidebar sur mobile */}
-                  {sidebarOpen && (
-                    <div
-                      className="fixed inset-0 z-20 bg-black bg-opacity-50 lg:hidden"
-                      onClick={() => setSidebarOpen(false)}
-                    />
-                  )}
-                  
-                  <main className="flex-1 p-6">
-                    <DashboardPage onMenuClick={toggleSidebar} />
-                  </main>
-                </div>
-              </div>
+              <DashboardPage />
             </PrivateRoute>
           }
         />
@@ -69,26 +75,7 @@ function App() {
           path="/pointages"
           element={
             <PrivateRoute>
-              <div className="min-h-screen bg-gray-50">
-                <Navbar onMenuClick={toggleSidebar} />
-                <div className="flex">
-                  <div className={`
-                    fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
-                    ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-                  `}>
-                    <Sidebar onClose={() => setSidebarOpen(false)} />
-                  </div>
-                  {sidebarOpen && (
-                    <div
-                      className="fixed inset-0 z-20 bg-black bg-opacity-50 lg:hidden"
-                      onClick={() => setSidebarOpen(false)}
-                    />
-                  )}
-                  <main className="flex-1 p-6">
-                    <PointagesPage />
-                  </main>
-                </div>
-              </div>
+              <PointagesPage />
             </PrivateRoute>
           }
         />
@@ -96,26 +83,7 @@ function App() {
           path="/sanctions"
           element={
             <PrivateRoute>
-              <div className="min-h-screen bg-gray-50">
-                <Navbar onMenuClick={toggleSidebar} />
-                <div className="flex">
-                  <div className={`
-                    fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
-                    ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-                  `}>
-                    <Sidebar onClose={() => setSidebarOpen(false)} />
-                  </div>
-                  {sidebarOpen && (
-                    <div
-                      className="fixed inset-0 z-20 bg-black bg-opacity-50 lg:hidden"
-                      onClick={() => setSidebarOpen(false)}
-                    />
-                  )}
-                  <main className="flex-1 p-6">
-                    <SanctionsPage />
-                  </main>
-                </div>
-              </div>
+              <SanctionsPage />
             </PrivateRoute>
           }
         />
@@ -123,26 +91,7 @@ function App() {
           path="/stagiaires"
           element={
             <PrivateRoute>
-              <div className="min-h-screen bg-gray-50">
-                <Navbar onMenuClick={toggleSidebar} />
-                <div className="flex">
-                  <div className={`
-                    fixed inset-y-0 left-0 z-30 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
-                    ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-                  `}>
-                    <Sidebar onClose={() => setSidebarOpen(false)} />
-                  </div>
-                  {sidebarOpen && (
-                    <div
-                      className="fixed inset-0 z-20 bg-black bg-opacity-50 lg:hidden"
-                      onClick={() => setSidebarOpen(false)}
-                    />
-                  )}
-                  <main className="flex-1 p-6">
-                    <StagiairesPage />
-                  </main>
-                </div>
-              </div>
+              <StagiairesPage />
             </PrivateRoute>
           }
         />
