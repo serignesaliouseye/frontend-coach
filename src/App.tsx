@@ -1,5 +1,5 @@
 // App.tsx - Version corrigée
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPages';
 import DashboardPage from './pages/DashboardPages';
@@ -11,35 +11,32 @@ import StagiairesPage from './pages/StagiairesPage';
 
 // Layout component qui contient la structure commune
 const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const closeSidebar = () => setSidebarOpen(false);
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar onMenuClick={toggleSidebar} />
       <div className="flex">
-        {/* Sidebar desktop */}
+        {/* Sidebar desktop - toujours visible sur grands écrans */}
         <div className="hidden lg:block">
           <Sidebar />
         </div>
 
-        {/* Sidebar mobile (overlay) */}
-        <div
-          className={`fixed inset-0 z-40 lg:hidden ${
-            sidebarOpen ? 'block' : 'hidden'
-          }`}
-        >
-          <div
-            className="fixed inset-0 bg-gray-600 bg-opacity-75"
-            onClick={toggleSidebar}
-          />
-          <div className="relative flex flex-col w-64 max-w-xs bg-white h-full">
-            <Sidebar onClose={toggleSidebar} />
-          </div>
-        </div>
+        {/* Sidebar mobile - overlay qui apparaît quand sidebarOpen est true */}
+        {sidebarOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
+              onClick={closeSidebar}
+            />
+            <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl lg:hidden">
+              <Sidebar onClose={closeSidebar} />
+            </div>
+          </>
+        )}
 
         <main className="flex-1 p-6">
           {children}
